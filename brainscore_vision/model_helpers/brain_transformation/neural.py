@@ -1,5 +1,6 @@
 import logging
 
+import numpy as np
 from result_caching import store_xarray, store
 from tqdm import tqdm
 
@@ -134,7 +135,8 @@ class LayerScores:
             score['layer'] = [layer]
             layer_scores.append(score)
         layer_scores = Score.merge(*layer_scores)
-        layer_scores = layer_scores.sel(layer=layers)  # preserve layer ordering
+        array_layers = np.array(layers, dtype=layer_scores.coords.dtypes['layer'])
+        layer_scores = layer_scores.sel(layer=array_layers)  # preserve layer ordering
         return layer_scores
 
     def _create_mapped_model(self, region, layer, model, model_identifier, visual_degrees):
